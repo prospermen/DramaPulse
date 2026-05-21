@@ -41,7 +41,7 @@ IgniteNow/
 ├── .dockerignore
 ├── .gitignore
 ├── AGENTS.md
-└── README1.md
+└── README.md
 ```
 
 ## 技术栈
