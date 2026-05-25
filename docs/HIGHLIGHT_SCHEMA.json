@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "IgniteNowHighlightResult",
+  "type": "object",
+  "required": ["highlights"],
+  "properties": {
+    "highlights": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "start_time",
+          "end_time",
+          "highlight_type",
+          "emotion",
+          "intensity",
+          "confidence",
+          "trigger_score",
+          "reason",
+          "button_text",
+          "effect"
+        ],
+        "properties": {
+          "start_time": { "type": "number", "minimum": 0 },
+          "end_time": { "type": "number", "exclusiveMinimum": 0 },
+          "highlight_type": {
+            "type": "string",
+            "enum": ["conflict", "reversal", "sweet", "satisfying", "suspense"]
+          },
+          "emotion": { "type": "string", "minLength": 1 },
+          "intensity": { "type": "number", "minimum": 0, "maximum": 1 },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "trigger_score": { "type": "number", "minimum": 0, "maximum": 1 },
+          "reason": { "type": "string" },
+          "button_text": { "type": "string", "minLength": 1 },
+          "effect": {
+            "type": "string",
+            "enum": ["anger_bar", "screen_flash", "heart_rain", "boom_effect", "countdown"]
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,15 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: ignitenow-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: ignitenow
+    ports:
+      - "3306:3306"
+    volumes:
+      - ignitenow_mysql:/var/lib/mysql
+
+volumes:
+  ignitenow_mysql:
