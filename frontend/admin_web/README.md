@@ -33,16 +33,26 @@
 - 新增前端源码：
   - `src/main.jsx`
   - `src/App.jsx`
-  - `src/styles.css`
+  - `src/pages/LandingPage.jsx`
+  - `src/pages/AdminWorkspace.jsx`
+  - `src/styles/base.css`
+  - `src/styles/landing.css`
+  - `src/styles/workspace.css`
 
 ## 目录说明
 
 ```text
 frontend/admin_web/
 ├── src/
-│   ├── App.jsx          # 入口页与 /admin 后台工作台骨架
-│   ├── main.jsx         # React 挂载入口、Ant Design ConfigProvider 与主题 token
-│   └── styles.css       # 入口主页样式、响应式布局和视觉系统落地
+│   ├── pages/
+│   │   ├── LandingPage.jsx      # 概览页
+│   │   └── AdminWorkspace.jsx   # /admin 后台工作台骨架
+│   ├── styles/
+│   │   ├── base.css             # 全局基础样式
+│   │   ├── landing.css          # 概览页样式与动效
+│   │   └── workspace.css        # 后台工作台样式
+│   ├── App.jsx                  # 根据路径选择入口页或 /admin
+│   └── main.jsx                 # React 挂载入口、Ant Design ConfigProvider 与主题 token
 ├── index.html           # Vite HTML 入口
 ├── vite.config.js       # Vite 配置，默认端口 5173
 ├── eslint.config.js     # ESLint 配置
@@ -66,43 +76,13 @@ npm install
 npm run dev
 ```
 
-默认访问地址通常是：
-
-```text
-http://localhost:5173
-```
-
 入口页：
 
 ```text
 http://localhost:5173/
 ```
 
-后台工作台骨架：
-
-```text
-http://localhost:5173/admin
-```
-
-如果需要明确绑定本机地址，也可以使用：
-
-```bash
-npm run dev -- --host 127.0.0.1
-```
-
-然后访问：
-
-```text
-http://127.0.0.1:5173/
-```
-
 ## 常用命令
-
-```bash
-npm run dev
-```
-
-启动本地开发服务器。
 
 ```bash
 npm run build
