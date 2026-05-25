@@ -1,22 +1,30 @@
 # IgniteNow Admin Web
 
-`frontend/admin_web/` 是 IgniteNow 的管理后台前端模块。当前已完成 `P0-WEB-01` 的工程初始化，并根据仓库根目录 `DESIGN.md` 建立了入口页，同时拆出 `/admin` 作为后续承载真实功能的后台工作台骨架。
+`frontend/admin_web/` 是 IgniteNow 的管理后台前端模块。当前已完成 `P0-WEB-01` 的工程初始化，并完成 `/` 概览页视觉体验打磨；`/admin` 作为后续承载真实功能的后台工作台骨架保留。
 
 ## 当前已完成
 
 - 初始化 Vite + React 项目结构。
 - 接入 Ant Design 和 `@ant-design/icons`。
-- 根据 `DESIGN.md` 建立入口主页视觉：
+- 建立并打磨 `/` 概览页视觉：
   - Canvas Cream 暖色背景
-  - 顶部浮动 pill 导航
-  - 大圆角 hero 区域
-  - 能力地图圆形入口和 satellite CTA
+  - 固定浮动 pill 导航
+  - hero 区短剧互动引擎预览
+  - 产品价值 Before/After 叠卡动效
+  - 项目亮点 bento 卡片与扫光动效
+  - 核心闭环自动强调动画
+  - 应用场景 mini UI 动效
+  - 背景环境光呼吸动效
   - 黑色 pill CTA
-  - 橙色轨迹线与 accent dot
-  - warm black 底部区域
 - 建立两层页面结构：
-  - `/`：介绍型入口页，负责说明系统链路、能力地图和当前状态。
+  - `/`：介绍型概览页，负责说明产品价值、项目亮点、核心闭环和应用场景。
   - `/admin`：密集型后台工作台骨架，后续承载真实管理功能。
+- 拆分前端模块边界：
+  - `src/pages/LandingPage.jsx`：概览页组件。
+  - `src/pages/AdminWorkspace.jsx`：后台工作台骨架组件。
+  - `src/styles/base.css`：全局基础样式。
+  - `src/styles/landing.css`：概览页样式和动效。
+  - `src/styles/workspace.css`：后台工作台样式。
 - 在 `/admin` 中加入 P0 后续功能导航：
   - 短剧管理
   - 剧集管理
@@ -104,7 +112,7 @@ npm run preview
 
 ## 已验证结果
 
-截至 2026-05-25，已完成以下验证：
+截至 2026-05-26，已完成以下验证：
 
 - `npm install` 成功。
 - `npm exec eslint .` 通过。
@@ -112,7 +120,7 @@ npm run preview
 - `npm run dev -- --host 127.0.0.1` 启动后，`http://127.0.0.1:5173/` 返回 HTTP 200。
 - `/admin` 已作为后台工作台骨架，可由入口页按钮进入。
 
-当前构建产物中 JS 约 347 kB，未触发 500 kB chunk 警告。等页面和路由变多后，可再通过按需拆分页面、动态 import 或 manual chunks 优化。
+当前构建产物中 JS 约 836 kB，Vite 会提示 chunk 超过 500 kB。该提示主要来自当前单包构建与 Ant Design 依赖体积，不影响本地运行；等页面和路由变多后，可通过动态 import、路由级拆分或 manual chunks 优化。
 
 ## 接下来需要完善
 
@@ -137,6 +145,7 @@ npm run preview
 - 尚未引入前端路由库；当前通过 `window.location.pathname` 在 `/` 和 `/admin` 间做轻量切换。
 - 尚未实现错误提示、加载态、空状态、表单校验和接口异常处理。
 - 尚未实现端到端验收链路。
+- 概览页已完成当前阶段视觉打磨，后续若继续调整，应优先保持 `LandingPage.jsx` 与 `landing.css` 内聚，避免影响 `/admin` 工作台样式。
 
 ## 后续开发建议
 
