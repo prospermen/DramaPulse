@@ -26,6 +26,69 @@ X-Admin-Token: demo-admin-token
 - `action_type`: `impression`、`click`、`ignore`
 - 时间单位：秒，字段类型为 number/float
 
+## 移动端上传认证 API
+
+### `POST /api/auth/register`
+
+注册上传账号，并返回 Bearer token。
+
+```json
+{
+  "username": "uploader",
+  "password": "secret123"
+}
+```
+
+响应 `data`：
+
+```json
+{
+  "access_token": "jwt-token",
+  "token_type": "bearer",
+  "user_id": 1,
+  "username": "uploader",
+  "role": "uploader"
+}
+```
+
+### `POST /api/auth/login`
+
+登录上传账号，并返回 Bearer token。请求体同注册接口。
+
+### `POST /api/uploads/episodes`
+
+移动端上传单集视频和字幕并入库。需要：
+
+```http
+Authorization: Bearer <access_token>
+Content-Type: multipart/form-data
+```
+
+表单字段：
+
+- `drama_id`: 可选；传入时挂到已有短剧。
+- `drama_title`: 可选；未传 `drama_id` 时必填，用于创建新短剧。
+- `drama_description`: 可选。
+- `episode_no`: 必填，整数。
+- `episode_title`: 必填。
+- `duration`: 可选，秒。
+- `video_file`: 必填，仅支持 `.mp4`。
+- `subtitle_file`: 可选，支持 `.srt`、`.vtt`、`.txt`。
+- `subtitle_content`: 可选；无字幕文件时可直接传字幕文本。
+
+响应 `data`：
+
+```json
+{
+  "drama_id": 2,
+  "episode_id": 10,
+  "video_url": "http://localhost:8000/api/player/episodes/10/video",
+  "has_subtitle": true
+}
+```
+
+上传文件保存在服务端本地 `backend/uploads/`，数据库中的 `episode.video_url` 保存为服务端本地文件路径，播放端继续通过 `/api/player/episodes/{episode_id}/video` 代理播放。
+
 ## 管理后台 API
 
 ### `GET /api/dramas`
@@ -86,7 +149,8 @@ AI 高光识别默认逻辑：存在 `DEEPSEEK_API_KEY` 时优先调用 DeepSeek
 {
   "highlight_count": 3,
   "provider": "deepseek",
-  "llm_error": ""
+  "llm_error": "",
+  "invalid_count": 0
 }
 ```
 
@@ -94,11 +158,52 @@ AI 高光识别默认逻辑：存在 `DEEPSEEK_API_KEY` 时优先调用 DeepSeek
 
 返回后台审核用高光列表，包含 `reason`、`confidence`、`status`。
 
+### `POST /api/episodes/{episode_id}/highlights`
+
+手动新增高光点。需要 `X-Admin-Token`。
+
+```json
+{
+  "start_time": 8,
+  "end_time": 12,
+  "highlight_type": "reversal",
+  "emotion": "震惊",
+  "intensity": 0.86,
+  "confidence": 0.8,
+  "trigger_score": 0.78,
+  "reason": "剧情发生反转",
+  "button_text": "反转了",
+  "effect": "screen_flash",
+  "status": "draft"
+}
+```
+
+规则：时间必须合法，`highlight_type`、`effect`、`status` 必须符合枚举；新增 `published` 高光时不得与该集已发布高光时间段重叠。
+
 ### `PUT /api/highlights/{highlight_id}`
 
 编辑高光点。需要 `X-Admin-Token`。
 
 可编辑字段：`start_time`、`end_time`、`highlight_type`、`emotion`、`intensity`、`confidence`、`trigger_score`、`reason`、`button_text`、`effect`、`status`。
+
+规则：编辑为 `published` 时不得与该集其他已发布高光时间段重叠。
+
+### `DELETE /api/highlights/{highlight_id}`
+
+归档高光点。需要 `X-Admin-Token`。该接口不物理删除数据，而是将 `status` 置为 `archived`，用于保留审核痕迹并避免播放端继续下发。
+
+### `POST /api/episodes/{episode_id}/highlights/bulk-status`
+
+批量更新该集高光状态。需要 `X-Admin-Token`。
+
+```json
+{
+  "highlight_ids": [1, 2, 3],
+  "status": "published"
+}
+```
+
+`highlight_ids` 为 `null` 或缺省时更新该集全部高光。批量发布时会校验发布后时间段不重叠。
 
 ### `POST /api/episodes/{episode_id}/highlights/publish`
 
@@ -117,6 +222,20 @@ AI 高光识别默认逻辑：存在 `DEEPSEEK_API_KEY` 时优先调用 DeepSeek
 ### `GET /api/analytics/top-actions`
 
 热门按钮点击排行。需要 `X-Admin-Token`。
+
+### `GET /api/analytics/highlight-ranking?limit=20`
+
+按点击数、曝光数和点击率返回已发布高光排行。需要 `X-Admin-Token`。
+
+返回字段：`highlight_id`、`episode_id`、`start_time`、`end_time`、`highlight_type`、`button_text`、`status`、`impression_count`、`click_count`、`ignore_count`、`click_rate`。
+
+### `GET /api/analytics/episodes/{episode_id}/timeline`
+
+返回某集高光时间线及每条高光的曝光、点击、忽略和点击率。需要 `X-Admin-Token`。
+
+### `GET /api/analytics/highlights/{highlight_id}`
+
+返回单条高光的互动统计。需要 `X-Admin-Token`。
 
 ### `POST /api/demo/seed`
 

@@ -1,5 +1,50 @@
 # 开发进度
 
+## 2026-05-27
+
+### 已完成
+- 新增移动端上传账号体系：`user_account` 模型、注册和登录接口、JWT token 校验、上传接口 Bearer 鉴权。
+- 新增移动端单集上传接口 `POST /api/uploads/episodes`，支持上传 MP4 视频、SRT/VTT/TXT 字幕文件或字幕文本，文件保存到 `backend/uploads/`，并创建或复用短剧后写入 `episode`。
+- Flutter 播放端新增上传入口和 `UploadEpisodePage`，支持注册/登录、选择 MP4、选择字幕文件、填写字幕文本、上传成功后刷新剧集列表并可跳转播放页。
+- 更新 `.env.example`、`datebase/schema.sql`、`docs/API_CONTRACT.md` 和 `docs/DECISIONS.md`，同步 JWT、上传接口和本地文件保存策略。
+
+### 已验证
+- `python -m pytest tests` 通过，共 12 个测试，新增覆盖未登录上传、登录上传入库、播放端可见、非 MP4 拦截、字幕文本入库。
+- `python -m compileall backend ai_service` 通过。
+- `python backend/scripts/verify_demo_chain.py --base-url http://127.0.0.1:8010 --skip-video-range` 通过，确认上传相关改动未破坏 E001-E007 演示链路。
+- `npm run build` 通过，管理后台生产构建仍可用；Vite 仍提示 Ant Design chunk 超过 500k。
+- `flutter pub get` 通过，新增 `file_picker` 依赖。
+- `flutter analyze` 通过。
+
+### 遗留问题
+- 上传视频时长仍由用户填写，暂未自动解析 MP4 duration。
+- 上传后不会自动触发 AI 分析，需要在管理后台点击识别并审核发布。
+
+## 2026-05-26
+
+### 已完成
+- 按优先级 1 完成后端结构整理：将原集中式 API 拆分为 `admin`、`player`、`interactions`、`analytics`、`demo` 路由，并抽出通用鉴权、视频 URL 处理和高光校验服务。
+- 补齐后台高光管理能力：支持手动新增高光、编辑高光、归档高光、批量更新状态，并在发布状态下校验同集高光时间段重叠。
+- 强化 AI 分析入库保护：缺少字幕时明确置为 `failed`，非法高光项不会直接中断整集分析，响应中返回 `invalid_count`。
+- 补齐管理统计接口：新增高光互动排行、剧集高光时间线、单条高光统计，便于后续后台看板继续扩展。
+- 补齐生产化最小测试集：新增 `tests/test_player_api.py`、`tests/test_interactions.py`、`tests/test_analysis.py` 和内存 SQLite 测试夹具，覆盖播放端字段隔离、draft/rejected 不下发、互动幂等、admin token、字幕缺失和高光校验。
+- 将 Pydantic v2 schema 配置迁移到 `ConfigDict(from_attributes=True)`，减少测试和后续升级噪音。
+- 管理后台接入新增审核和统计接口：高光审核页支持勾选后批量发布、驳回、归档；单条高光可打开统计抽屉；新增单集时间线看板和高光排行榜。
+- 同步 `docs/API_CONTRACT.md`，记录新增高光管理接口、分析响应字段和 analytics 接口。
+- 补齐演示数据状态：将 E006 的 6 条高光从 `draft` 发布为 `published`，恢复 E001-E007 共 54 条已发布高光的交付基线。
+
+### 已验证
+- `python -m compileall backend ai_service` 通过。
+- `python -m pytest tests` 通过，共 8 个测试。
+- `npm run build` 通过，管理后台生产包已重新生成；Vite 仍提示 Ant Design 相关 chunk 超过 500k，为既有体积提示。
+- `python backend/scripts/verify_demo_chain.py --base-url http://127.0.0.1:8010` 通过，共 17 项检查：后端健康、E001-E007 播放端详情、7 个本地 MP4 Range 代理、播放端不泄露审核字段、管理 analytics 鉴权和新增统计接口。
+- 管理端写接口冒烟通过：`POST /api/episodes/{episode_id}/highlights`、`PUT /api/highlights/{highlight_id}`、`POST /api/episodes/{episode_id}/highlights/bulk-status`、`DELETE /api/highlights/{highlight_id}`，测试高光已清理。
+
+### 遗留问题
+- 当前 analytics 仍是实时 SQL 聚合，适合 MVP 演示；数据量变大后应增加按剧集/日期的聚合表或缓存。
+- 管理后台时间线目前使用轻量 CSS 视图，尚未引入 ECharts；后续如果要做热力图、趋势图和多维筛选，可再引入图表库并拆分 chunk。
+- SQLAlchemy 模型仍使用 `datetime.utcnow` 默认值，在 Python 3.14 测试环境下会提示弃用警告；后续可统一迁移到 timezone-aware UTC 时间。
+
 ## 2026-05-25
 
 ### 已完成

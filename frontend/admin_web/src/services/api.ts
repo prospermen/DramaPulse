@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { ApiResponse, Drama, Episode, Highlight, Overview } from '../types/api';
+import type { ApiResponse, Drama, Episode, EpisodeTimelineItem, Highlight, HighlightStats, Overview } from '../types/api';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000',
@@ -28,7 +28,19 @@ export const adminApi = {
   listHighlights: (episodeId: number) => unwrap<Highlight[]>(api.get(`/api/episodes/${episodeId}/highlights`)),
   publishHighlights: (episodeId: number) =>
     unwrap<{ published_count: number }>(api.post(`/api/episodes/${episodeId}/highlights/publish`)),
+  bulkHighlightStatus: (episodeId: number, highlightIds: number[] | null, status: string) =>
+    unwrap<{ updated_count: number; status: string }>(
+      api.post(`/api/episodes/${episodeId}/highlights/bulk-status`, {
+        highlight_ids: highlightIds,
+        status,
+      }),
+    ),
   updateHighlight: (highlightId: number, payload: Partial<Highlight>) =>
     unwrap<Highlight>(api.put(`/api/highlights/${highlightId}`, payload)),
+  archiveHighlight: (highlightId: number) => unwrap<Highlight>(api.delete(`/api/highlights/${highlightId}`)),
   overview: () => unwrap<Overview>(api.get('/api/analytics/overview')),
+  highlightRanking: (limit = 20) => unwrap<HighlightStats[]>(api.get('/api/analytics/highlight-ranking', { params: { limit } })),
+  episodeTimeline: (episodeId: number) =>
+    unwrap<EpisodeTimelineItem[]>(api.get(`/api/analytics/episodes/${episodeId}/timeline`)),
+  highlightStats: (highlightId: number) => unwrap<HighlightStats>(api.get(`/api/analytics/highlights/${highlightId}`)),
 };

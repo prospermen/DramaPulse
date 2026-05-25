@@ -22,6 +22,14 @@ CREATE TABLE IF NOT EXISTS episode (
   FOREIGN KEY (drama_id) REFERENCES drama(id)
 );
 
+CREATE TABLE IF NOT EXISTS user_account (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  username VARCHAR(120) NOT NULL UNIQUE,
+  password_hash VARCHAR(256) NOT NULL,
+  role VARCHAR(32) DEFAULT 'uploader',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS highlight_event (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   episode_id INTEGER NOT NULL,
@@ -67,5 +75,6 @@ CREATE TABLE IF NOT EXISTS user_interaction_log (
 
 CREATE INDEX IF NOT EXISTS idx_episode_drama ON episode(drama_id);
 CREATE INDEX IF NOT EXISTS idx_episode_analyze_status ON episode(analyze_status);
+CREATE INDEX IF NOT EXISTS idx_user_account_username ON user_account(username);
 CREATE INDEX IF NOT EXISTS idx_highlight_episode_status ON highlight_event(episode_id, status);
 CREATE INDEX IF NOT EXISTS idx_interaction_episode_action ON user_interaction_log(episode_id, action_type);

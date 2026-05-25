@@ -1,9 +1,10 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 HIGHLIGHT_TYPES = {"conflict", "reversal", "sweet", "satisfying", "suspense"}
 HIGHLIGHT_STATUSES = {"draft", "published", "rejected", "archived"}
 ACTION_TYPES = {"impression", "click", "ignore"}
+EFFECTS = {"anger_bar", "screen_flash", "heart_rain", "boom_effect", "countdown"}
 
 
 class DramaCreate(BaseModel):
@@ -13,11 +14,10 @@ class DramaCreate(BaseModel):
 
 
 class DramaOut(DramaCreate):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     status: str
-
-    class Config:
-        from_attributes = True
 
 
 class EpisodeCreate(BaseModel):
@@ -31,16 +31,40 @@ class EpisodeCreate(BaseModel):
 
 
 class EpisodeOut(EpisodeCreate):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     analyze_status: str
     analyze_error: str = ""
 
-    class Config:
-        from_attributes = True
-
 
 class AnalyzeRequest(BaseModel):
     force_reanalyze: bool = False
+
+
+class AuthRegister(BaseModel):
+    username: str = Field(min_length=3, max_length=120)
+    password: str = Field(min_length=6, max_length=128)
+
+
+class AuthLogin(BaseModel):
+    username: str
+    password: str
+
+
+class AuthTokenOut(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user_id: int
+    username: str
+    role: str
+
+
+class UploadEpisodeOut(BaseModel):
+    drama_id: int
+    episode_id: int
+    video_url: str
+    has_subtitle: bool
 
 
 class HighlightUpdate(BaseModel):
@@ -57,7 +81,28 @@ class HighlightUpdate(BaseModel):
     status: str | None = None
 
 
+class HighlightCreate(BaseModel):
+    start_time: float
+    end_time: float
+    highlight_type: str
+    emotion: str = ""
+    intensity: float = Field(default=0.5, ge=0, le=1)
+    confidence: float = Field(default=0.5, ge=0, le=1)
+    trigger_score: float = Field(default=0.5, ge=0, le=1)
+    reason: str = ""
+    button_text: str = ""
+    effect: str = ""
+    status: str = "draft"
+
+
+class HighlightBulkStatusUpdate(BaseModel):
+    highlight_ids: list[int] | None = None
+    status: str
+
+
 class HighlightOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     episode_id: int
     start_time: float
@@ -71,9 +116,6 @@ class HighlightOut(BaseModel):
     button_text: str
     effect: str
     status: str
-
-    class Config:
-        from_attributes = True
 
 
 class PlayerHighlight(BaseModel):
@@ -120,3 +162,30 @@ class InteractionCreate(BaseModel):
     action_value: str = ""
     watch_time: float = 0
     idempotency_key: str
+
+
+class HighlightStatsOut(BaseModel):
+    highlight_id: int
+    episode_id: int
+    start_time: float
+    end_time: float
+    highlight_type: str
+    button_text: str
+    status: str
+    impression_count: int
+    click_count: int
+    ignore_count: int
+    click_rate: float
+
+
+class EpisodeTimelineItem(BaseModel):
+    highlight_id: int
+    start_time: float
+    end_time: float
+    highlight_type: str
+    button_text: str
+    status: str
+    impression_count: int
+    click_count: int
+    ignore_count: int
+    click_rate: float

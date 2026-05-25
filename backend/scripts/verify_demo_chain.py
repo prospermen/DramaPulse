@@ -209,9 +209,48 @@ def check_admin_analytics(session: requests.Session, args: argparse.Namespace) -
         "top actions",
     )
     assert_true(isinstance(actions, list), "top actions data is not a list")
+
+    ranking = unwrap_data(
+        request_json(session, "GET", args.base_url, "/api/analytics/highlight-ranking", args.timeout, headers=headers),
+        "highlight ranking",
+    )
+    assert_true(isinstance(ranking, list), "highlight ranking data is not a list")
+    assert_true(len(ranking) > 0, "highlight ranking is empty")
+    first_highlight_id = ranking[0].get("highlight_id")
+    for key in ("impression_count", "click_count", "ignore_count", "click_rate"):
+        assert_true(key in ranking[0], f"highlight ranking missing {key}")
+
+    timeline_episode_id = EXPECTED_EPISODES[0]["episode_id"]
+    timeline = unwrap_data(
+        request_json(
+            session,
+            "GET",
+            args.base_url,
+            f"/api/analytics/episodes/{timeline_episode_id}/timeline",
+            args.timeout,
+            headers=headers,
+        ),
+        "episode timeline",
+    )
+    assert_true(isinstance(timeline, list), "episode timeline data is not a list")
+    assert_true(len(timeline) >= EXPECTED_EPISODES[0]["highlight_count"], "episode timeline is missing highlights")
+    assert_true(timeline == sorted(timeline, key=lambda item: item.get("start_time", 0)), "episode timeline is not sorted")
+
+    highlight_stats = unwrap_data(
+        request_json(
+            session,
+            "GET",
+            args.base_url,
+            f"/api/analytics/highlights/{first_highlight_id}",
+            args.timeout,
+            headers=headers,
+        ),
+        "highlight stats",
+    )
+    assert_true(highlight_stats.get("highlight_id") == first_highlight_id, "highlight stats id mismatch")
     return CheckResult(
         "admin analytics",
-        f"published={data['published_highlight_count']} interactions={data['interaction_count']}",
+        f"published={data['published_highlight_count']} interactions={data['interaction_count']} ranking={len(ranking)}",
     )
 
 

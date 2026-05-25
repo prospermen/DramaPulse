@@ -19,6 +19,16 @@ class Drama(Base):
     episodes: Mapped[list["Episode"]] = relationship(back_populates="drama", cascade="all, delete-orphan")
 
 
+class UserAccount(Base):
+    __tablename__ = "user_account"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    username: Mapped[str] = mapped_column(String(120), nullable=False, unique=True, index=True)
+    password_hash: Mapped[str] = mapped_column(String(256), nullable=False)
+    role: Mapped[str] = mapped_column(String(32), default="uploader", index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
 class Episode(Base):
     __tablename__ = "episode"
 

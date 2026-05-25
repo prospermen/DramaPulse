@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'models/drama.dart';
 import 'models/episode_summary.dart';
 import 'pages/player_page.dart';
+import 'pages/upload_episode_page.dart';
 import 'services/api_client.dart';
 
 void main() {
@@ -37,12 +38,18 @@ class DemoEntryPage extends StatefulWidget {
 
 class _DemoEntryPageState extends State<DemoEntryPage> {
   final _apiClient = ApiClient();
-  late final Future<List<DramaWithEpisodes>> _catalogFuture;
+  late Future<List<DramaWithEpisodes>> _catalogFuture;
 
   @override
   void initState() {
     super.initState();
     _catalogFuture = _loadCatalog();
+  }
+
+  void _refreshCatalog() {
+    setState(() {
+      _catalogFuture = _loadCatalog();
+    });
   }
 
   Future<List<DramaWithEpisodes>> _loadCatalog() async {
@@ -74,9 +81,29 @@ class _DemoEntryPageState extends State<DemoEntryPage> {
                 ),
               ),
               const SizedBox(height: 10),
-              const Text(
-                '选择数据库中的短剧和剧集，进入播放页验证时间轴触发和互动回传。',
-                style: TextStyle(color: Color(0xFFD8E1DC), fontSize: 16),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Expanded(
+                    child: Text(
+                      '选择数据库中的短剧和剧集，进入播放页验证时间轴触发和互动回传。',
+                      style: TextStyle(color: Color(0xFFD8E1DC), fontSize: 16),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  FilledButton.icon(
+                    onPressed: () async {
+                      await Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const UploadEpisodePage(),
+                        ),
+                      );
+                      _refreshCatalog();
+                    },
+                    icon: const Icon(Icons.cloud_upload),
+                    label: const Text('上传剧集'),
+                  ),
+                ],
               ),
               const SizedBox(height: 32),
               Expanded(

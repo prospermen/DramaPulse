@@ -35,6 +35,22 @@ export interface Highlight {
   status: string;
 }
 
+export interface HighlightStats {
+  highlight_id: number;
+  episode_id: number;
+  start_time: number;
+  end_time: number;
+  highlight_type: string;
+  button_text: string;
+  status: string;
+  impression_count: number;
+  click_count: number;
+  ignore_count: number;
+  click_rate: number;
+}
+
+export type EpisodeTimelineItem = HighlightStats;
+
 export interface Overview {
   drama_count: number;
   episode_count: number;
