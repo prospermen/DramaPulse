@@ -16,12 +16,19 @@
   - 应用场景 mini UI 动效
   - 背景环境光呼吸动效
   - 黑色 pill CTA
-- 建立两层页面结构：
+- 建立两层页面结构并接入 React Router：
   - `/`：介绍型概览页，负责说明产品价值、项目亮点、核心闭环和应用场景。
-  - `/admin`：密集型后台工作台骨架，后续承载真实管理功能。
+  - `/admin`：自动重定向到 `/admin/dashboard`。
+  - `/admin/dramas`：短剧管理空白页，暂仅由工作台顶部展示标题和描述。
+  - `/admin/episodes`：剧集配置空白页，暂仅由工作台顶部展示标题和描述。
+  - `/admin/analyze`：AI 高光识别空白页，暂仅由工作台顶部展示标题和描述。
+  - `/admin/highlights`：高光审核发布空白页，暂仅由工作台顶部展示标题和描述。
+  - `/admin/dashboard`：仪表盘空白页，暂仅由工作台顶部展示标题和描述。
 - 拆分前端模块边界：
   - `src/pages/LandingPage.jsx`：概览页组件。
-  - `src/pages/AdminWorkspace.jsx`：后台工作台骨架组件。
+  - `src/pages/AdminWorkspace.jsx`：后台工作台布局组件。
+  - `src/pages/admin/`：后台各路由占位页面。
+  - `src/adminModules.jsx`：后台导航和页面元信息配置。
   - `src/styles/base.css`：全局基础样式。
   - `src/styles/landing.css`：概览页样式和动效。
   - `src/styles/workspace.css`：后台工作台样式。
@@ -31,6 +38,11 @@
   - AI 分析
   - 高光审核
   - 基础看板
+- 调整 `/admin` 侧边栏：
+  - 顶部 `IgniteNow` 为静态品牌标识，不再作为返回入口页的链接。
+  - 副标识改为版本号 `v0.1`。
+  - 左侧品牌区和右侧顶部栏统一为 65px 高度，并使用同色灰色底部分割线；侧栏收起时仍保留该分割线。
+  - 侧栏菜单项和底部折叠按钮统一使用固定尺寸 SVG 图标、小圆角矩形按钮、同一套 hover 样式和一致的宽度/边距；侧栏收起后隐藏顶部标题，菜单项和底部折叠按钮都以 40px 图标按钮居中显示。
 - 配置基础工程文件：
   - `package.json`
   - `package-lock.json`
@@ -54,12 +66,14 @@ frontend/admin_web/
 ├── src/
 │   ├── pages/
 │   │   ├── LandingPage.jsx      # 概览页
-│   │   └── AdminWorkspace.jsx   # /admin 后台工作台骨架
+│   │   ├── AdminWorkspace.jsx   # /admin 后台工作台布局
+│   │   └── admin/               # /admin/* 占位页面
+│   ├── adminModules.jsx         # 后台导航和模块元信息
 │   ├── styles/
 │   │   ├── base.css             # 全局基础样式
 │   │   ├── landing.css          # 概览页样式与动效
 │   │   └── workspace.css        # 后台工作台样式
-│   ├── App.jsx                  # 根据路径选择入口页或 /admin
+│   ├── App.jsx                  # React Router 路由配置
 │   └── main.jsx                 # React 挂载入口、Ant Design ConfigProvider 与主题 token
 ├── index.html           # Vite HTML 入口
 ├── vite.config.js       # Vite 配置，默认端口 5173
@@ -68,6 +82,14 @@ frontend/admin_web/
 ├── package-lock.json    # 依赖锁定文件
 ├── .gitignore           # 忽略 node_modules、dist、日志文件
 └── README.md            # 本文档
+```
+
+## 认证设计
+
+登录认证的原理、MVP token 登录方案、前后端联动方式和后续成熟账号体系演进，见：
+
+```text
+frontend/admin_web/AUTHENTICATION.md
 ```
 
 ## 本地启动
@@ -118,7 +140,7 @@ npm run preview
 - `npm exec eslint .` 通过。
 - `npm run build` 通过。
 - `npm run dev -- --host 127.0.0.1` 启动后，`http://127.0.0.1:5173/` 返回 HTTP 200。
-- `/admin` 已作为后台工作台骨架，可由入口页按钮进入。
+- `/admin` 已接入 React Router，并自动跳转到 `/admin/dashboard`。
 
 当前构建产物中 JS 约 836 kB，Vite 会提示 chunk 超过 500 kB。该提示主要来自当前单包构建与 Ant Design 依赖体积，不影响本地运行；等页面和路由变多后，可通过动态 import、路由级拆分或 manual chunks 优化。
 
@@ -142,7 +164,7 @@ npm run preview
 - 尚未实现 `X-Admin-Token` 自动注入。
 - 尚未配置环境变量，例如后端 API base URL 和 admin token。
 - 当前 `/admin` 只是后台工作台骨架，不具备真实创建、编辑、发布或查询能力。
-- 尚未引入前端路由库；当前通过 `window.location.pathname` 在 `/` 和 `/admin` 间做轻量切换。
+- 已引入 `react-router-dom`；当前 `/admin/*` 页面内容区留空，仅保留工作台框架、侧边导航和顶部标题描述。
 - 尚未实现错误提示、加载态、空状态、表单校验和接口异常处理。
 - 尚未实现端到端验收链路。
 - 概览页已完成当前阶段视觉打磨，后续若继续调整，应优先保持 `LandingPage.jsx` 与 `landing.css` 内聚，避免影响 `/admin` 工作台样式。

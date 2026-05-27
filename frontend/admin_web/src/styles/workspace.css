@@ -8,20 +8,30 @@
   position: sticky;
   top: 0;
   height: 100vh;
-  overflow: auto;
+  overflow: hidden;
   background: #fcfbfa !important;
   border-right: 1px solid rgba(20, 20, 19, 0.1);
+}
+
+.workspace-sider .ant-layout-sider-children {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 .workspace-brand {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 4px;
-  padding: 24px 24px 20px;
+  height: 65px;
+  padding: 0 24px;
   color: #141413;
   font-size: 20px;
   font-weight: 700;
   letter-spacing: -0.02em;
+  white-space: nowrap;
+  border-bottom: 1px solid rgba(20, 20, 19, 0.1);
 }
 
 .workspace-brand span {
@@ -32,21 +42,110 @@
   text-transform: uppercase;
 }
 
+.workspace-sider.ant-layout-sider-collapsed .workspace-brand {
+  align-items: center;
+  padding-inline: 0;
+  font-size: 17px;
+  color: transparent;
+}
+
+.workspace-sider.ant-layout-sider-collapsed .workspace-brand span {
+  display: none;
+}
+
 .workspace-sider .ant-menu {
+  flex: 1;
+  overflow-y: auto;
   background: transparent;
   border-inline-end: 0 !important;
+  padding-top: 12px;
 }
 
 .workspace-sider .ant-menu-item {
   width: calc(100% - 24px);
-  height: 42px;
+  height: 40px;
   margin: 4px 12px;
-  border-radius: 20px;
+  color: #565656;
+  border-radius: 10px;
+}
+
+.workspace-sider .ant-menu-item:hover,
+.workspace-collapse-button:hover {
+  color: #141413 !important;
+  background: rgba(20, 20, 19, 0.06) !important;
 }
 
 .workspace-sider .ant-menu-item-selected {
   color: #f3f0ee;
-  background: #141413;
+  background: #141413 !important;
+  border-radius: 10px;
+}
+
+.workspace-sider .ant-menu-item-selected:hover {
+  color: #f3f0ee !important;
+  background: #141413 !important;
+}
+
+.workspace-sider .ant-menu-item .anticon,
+.workspace-collapse-button .anticon {
+  display: inline-flex;
+  flex: 0 0 18px;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  min-width: 18px;
+  height: 18px;
+  font-size: 18px !important;
+  line-height: 1;
+}
+
+.workspace-sider .ant-menu-item .anticon svg,
+.workspace-collapse-button .anticon svg {
+  display: block;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  transition: none;
+}
+
+.workspace-sider-footer {
+  position: sticky;
+  bottom: 0;
+  padding: 8px 0 12px;
+  background: #fcfbfa;
+  border-top: 1px solid rgba(20, 20, 19, 0.08);
+}
+
+.workspace-collapse-button {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: calc(100% - 24px);
+  height: 40px;
+  margin: 4px 12px;
+  padding: 0 14px;
+  color: #565656;
+  border-radius: 10px;
+}
+
+.workspace-sider.ant-layout-sider-collapsed .workspace-collapse-button {
+  width: 40px;
+  margin: 4px auto;
+  justify-content: center;
+  padding: 0;
+}
+
+.workspace-sider.ant-layout-sider-collapsed .ant-menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  margin: 4px auto;
+  padding: 0 !important;
+}
+
+.workspace-sider.ant-layout-sider-collapsed .ant-menu-item .anticon {
+  margin-inline-end: 0 !important;
 }
 
 .workspace-main {
@@ -58,7 +157,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 88px;
+  height: 65px;
   padding: 0 32px;
   background: rgba(243, 240, 238, 0.92);
   border-bottom: 1px solid rgba(20, 20, 19, 0.1);
@@ -70,6 +169,27 @@
   letter-spacing: -0.02em;
 }
 
+.workspace-header h4 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.workspace-title-block {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.workspace-title-block p {
+  margin: 0;
+  color: #696969;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
 .compact-pill {
   min-height: 38px;
   padding: 6px 18px;
@@ -79,31 +199,6 @@
   display: grid;
   gap: 20px;
   padding: 24px 32px 40px;
-}
-
-.workspace-summary {
-  display: flex;
-  justify-content: space-between;
-  gap: 24px;
-  padding: 28px;
-  background: #fcfbfa;
-  border: 1px solid rgba(20, 20, 19, 0.08);
-  border-radius: 24px;
-}
-
-.workspace-summary h1 {
-  margin: 12px 0 8px;
-  font-size: 32px;
-  font-weight: 500;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-}
-
-.workspace-summary p:last-child {
-  max-width: 720px;
-  margin: 0;
-  color: #565656;
-  line-height: 1.45;
 }
 
 .workspace-grid {
@@ -203,7 +298,6 @@
     padding: 16px;
   }
 
-  .workspace-summary,
   .table-toolbar {
     flex-direction: column;
     align-items: flex-start;
