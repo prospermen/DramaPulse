@@ -21,23 +21,60 @@
 
 .workspace-brand {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  gap: 4px;
   height: 65px;
   padding: 0 24px;
   color: #141413;
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  white-space: nowrap;
   border-bottom: 1px solid rgba(20, 20, 19, 0.1);
 }
 
-.workspace-brand span {
+.workspace-user-trigger {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0;
+  color: inherit;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.workspace-user-trigger:focus,
+.workspace-user-trigger:focus-visible {
+  outline: none;
+}
+
+.workspace-user-avatar {
+  flex: 0 0 34px;
+  color: #f3f0ee;
+  font-size: 15px;
+  font-weight: 700;
+  background: #141413;
+}
+
+.workspace-brand-copy {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  margin-left: 12px;
+  white-space: nowrap;
+}
+
+.workspace-brand-copy strong {
+  color: #141413;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.workspace-brand-copy span {
   color: #696969;
   font-size: 12px;
   font-weight: 500;
+  line-height: 1;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -45,11 +82,13 @@
 .workspace-sider.ant-layout-sider-collapsed .workspace-brand {
   align-items: center;
   padding-inline: 0;
-  font-size: 17px;
-  color: transparent;
 }
 
-.workspace-sider.ant-layout-sider-collapsed .workspace-brand span {
+.workspace-sider.ant-layout-sider-collapsed .workspace-user-trigger {
+  justify-content: center;
+}
+
+.workspace-sider.ant-layout-sider-collapsed .workspace-brand-copy {
   display: none;
 }
 
@@ -86,6 +125,13 @@
   background: #141413 !important;
 }
 
+.workspace-sider .ant-menu-item:focus,
+.workspace-sider .ant-menu-item:focus-visible,
+.workspace-collapse-button:focus,
+.workspace-collapse-button:focus-visible {
+  outline: none;
+}
+
 .workspace-sider .ant-menu-item .anticon,
 .workspace-collapse-button .anticon {
   display: inline-flex;
@@ -106,6 +152,17 @@
   width: 18px;
   height: 18px;
   transition: none;
+}
+
+.workspace-sider .ant-menu-item .anticon:focus,
+.workspace-sider .ant-menu-item .anticon:focus-visible,
+.workspace-sider .ant-menu-item .anticon svg:focus,
+.workspace-sider .ant-menu-item .anticon svg:focus-visible,
+.workspace-collapse-button .anticon:focus,
+.workspace-collapse-button .anticon:focus-visible,
+.workspace-collapse-button .anticon svg:focus,
+.workspace-collapse-button .anticon svg:focus-visible {
+  outline: none;
 }
 
 .workspace-sider-footer {

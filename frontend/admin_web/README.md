@@ -18,7 +18,8 @@
   - 黑色 pill CTA
 - 建立两层页面结构并接入 React Router：
   - `/`：介绍型概览页，负责说明产品价值、项目亮点、核心闭环和应用场景。
-  - `/admin`：自动重定向到 `/admin/dashboard`。
+  - `/login`：JWT 登录页，当前接口待后端契约接入；现阶段提交后会写入开发占位 token 并进入工作台。
+  - `/admin`：受前端访问守卫保护；无本地 access token 时会重定向到 `/login`，有 token 时自动重定向到 `/admin/dashboard`。
   - `/admin/dramas`：短剧管理空白页，暂仅由工作台顶部展示标题和描述。
   - `/admin/episodes`：剧集配置空白页，暂仅由工作台顶部展示标题和描述。
   - `/admin/analyze`：AI 高光识别空白页，暂仅由工作台顶部展示标题和描述。
@@ -29,6 +30,7 @@
   - `src/pages/AdminWorkspace.jsx`：后台工作台布局组件。
   - `src/pages/admin/`：后台各路由占位页面。
   - `src/adminModules.jsx`：后台导航和页面元信息配置。
+  - `src/auth.js`：当前前端访问守卫使用的本地 token 工具。
   - `src/styles/base.css`：全局基础样式。
   - `src/styles/landing.css`：概览页样式和动效。
   - `src/styles/workspace.css`：后台工作台样式。
@@ -41,8 +43,11 @@
 - 调整 `/admin` 侧边栏：
   - 顶部 `IgniteNow` 为静态品牌标识，不再作为返回入口页的链接。
   - 副标识改为版本号 `v0.1`。
+  - 品牌区左侧显示当前登录用户名首字母头像；侧栏收起时仅显示头像。
+  - 点击头像会打开用户菜单，可执行退出登录，清除本地登录态并返回 `/login`。
   - 左侧品牌区和右侧顶部栏统一为 65px 高度，并使用同色灰色底部分割线；侧栏收起时仍保留该分割线。
   - 侧栏菜单项和底部折叠按钮统一使用固定尺寸 SVG 图标、小圆角矩形按钮、同一套 hover 样式和一致的宽度/边距；侧栏收起后隐藏顶部标题，菜单项和底部折叠按钮都以 40px 图标按钮居中显示。
+  - 去掉侧栏菜单项、折叠按钮、图标和 SVG 的浏览器默认焦点虚线框，避免图标旁出现黄色虚线框。
 - 配置基础工程文件：
   - `package.json`
   - `package-lock.json`
@@ -69,6 +74,7 @@ frontend/admin_web/
 │   │   ├── AdminWorkspace.jsx   # /admin 后台工作台布局
 │   │   └── admin/               # /admin/* 占位页面
 │   ├── adminModules.jsx         # 后台导航和模块元信息
+│   ├── auth.js                  # 登录 token 本地读写工具
 │   ├── styles/
 │   │   ├── base.css             # 全局基础样式
 │   │   ├── landing.css          # 概览页样式与动效
@@ -86,7 +92,7 @@ frontend/admin_web/
 
 ## 认证设计
 
-登录认证的原理、MVP token 登录方案、前后端联动方式和后续成熟账号体系演进，见：
+JWT 登录认证方案、前后端联动方式和后续接入提醒，见：
 
 ```text
 frontend/admin_web/AUTHENTICATION.md

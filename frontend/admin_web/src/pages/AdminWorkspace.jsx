@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Layout, Menu, Typography } from 'antd';
-import { DoubleLeftOutlined, DoubleRightOutlined } from '@ant-design/icons';
+import { Avatar, Button, Dropdown, Layout, Menu, Typography } from 'antd';
+import { DoubleLeftOutlined, DoubleRightOutlined, LogoutOutlined } from '@ant-design/icons';
 import { adminModules, getAdminModuleByPath } from '../adminModules.jsx';
+import { clearAdminSession, getAdminUserName } from '../auth.js';
 
 const { Header, Sider, Content } = Layout;
 const { Title } = Typography;
@@ -12,6 +13,8 @@ export default function AdminWorkspace() {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const currentModule = getAdminModuleByPath(location.pathname);
+  const userName = getAdminUserName();
+  const userInitial = userName.trim().charAt(0).toUpperCase() || 'A';
 
   const menuItems = useMemo(
     () =>
@@ -23,6 +26,21 @@ export default function AdminWorkspace() {
     [],
   );
 
+  const userMenuItems = [
+    {
+      key: 'logout',
+      icon: <LogoutOutlined />,
+      label: '退出登录',
+    },
+  ];
+
+  const handleUserMenuClick = ({ key }) => {
+    if (key === 'logout') {
+      clearAdminSession();
+      navigate('/login', { replace: true });
+    }
+  };
+
   return (
     <Layout className="workspace-shell">
       <Sider
@@ -33,8 +51,21 @@ export default function AdminWorkspace() {
         className="workspace-sider"
       >
         <div className="workspace-brand">
-          IgniteNow
-          <span>v0.1</span>
+          <Dropdown
+            trigger={['click']}
+            placement="bottomLeft"
+            menu={{ items: userMenuItems, onClick: handleUserMenuClick }}
+          >
+            <button className="workspace-user-trigger" type="button">
+              <Avatar className="workspace-user-avatar" size={34}>
+                {userInitial}
+              </Avatar>
+              <span className="workspace-brand-copy">
+                <strong>IgniteNow</strong>
+                <span>v0.1</span>
+              </span>
+            </button>
+          </Dropdown>
         </div>
         <Menu
           mode="inline"

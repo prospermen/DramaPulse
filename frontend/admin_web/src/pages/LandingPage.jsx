@@ -164,7 +164,7 @@ export default function LandingPage() {
         </nav>
 
         <div className="nav-actions">
-          <a className="nav-admin-button" href="/admin">
+          <a className="nav-admin-button" href="/login">
             进入工作台
           </a>
           <Button
@@ -188,7 +188,7 @@ export default function LandingPage() {
             IgniteNow 识别短剧内容中的关键情绪节点，并将其转化为生动的互动体验
           </p>
           <div className="hero-actions">
-            <a className="primary-pill" href="/admin">
+            <a className="primary-pill" href="/login">
               进入工作台
               <RightOutlined />
             </a>
