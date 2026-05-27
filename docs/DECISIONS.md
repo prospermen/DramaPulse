@@ -65,3 +65,10 @@
 - 公开注册接口只创建 `uploader` 账号；管理员账号或其他后台托管账号只能通过已鉴权的 `POST /api/auth/admin/users` 创建，防止用户自助注册成管理员。
 - 后台审核读取接口 `GET /api/dramas`、`GET /api/episodes`、`GET /api/episodes/{episode_id}/highlights` 统一纳入后台鉴权，避免审核字段在未授权状态下暴露。
 - 播放端仍保持匿名观看和匿名互动，不强制登录；后端新增 `idempotency_key` 与 `user_id/highlight_id/action_type` 的一致性校验，非匿名 `user_id` 必须携带匹配的 Bearer token。
+
+## 2026-05-27 dev/frontend 合并
+
+- 将远端 `feature/frontend` 合入 `dev` 时，保留 `dev` 现有后端、AI 服务、移动端、数据库和测试实现，仅替换管理后台前端为新的 Vite + React + Ant Design + React Router 工作台结构。
+- 管理后台前端入口统一为 JSX 版本：`frontend/admin_web/src/main.jsx`、`src/App.jsx` 和 `vite.config.js`；旧的 TypeScript 单文件管理台入口与 `X-Admin-Token` API client 已移除，避免两套前端入口并存。
+- `/login` 不再写入开发占位 token，改为调用后端现有 `POST /api/auth/login`，仅允许 `role=admin` 的账号进入 `/admin/*`。
+- 前端统一 Axios client 放在 `frontend/admin_web/src/services/apiClient.js`，请求自动携带 `Authorization: Bearer <access_token>`，收到 `401/403` 时清理本地登录态并跳转 `/login`。

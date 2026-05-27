@@ -133,5 +133,25 @@
 - `python -m pytest tests/test_auth_permissions.py tests/test_interactions.py tests/test_analysis.py tests/test_player_api.py tests/test_uploads.py` 通过，共 20 个测试。
 
 ### 遗留问题
-- 管理后台前端仍使用 `X-Admin-Token` 自动请求，尚未做账号密码登录 UI；后端已准备 admin JWT 能力。
+- 管理后台前端已合入账号密码登录 UI，并接入后端 JWT 登录；后台业务页面仍是工作台骨架，尚未接入短剧、剧集、高光和看板真实数据 API。
 - 播放端仍是匿名互动，不强制用户登录；当前只做匿名身份和幂等键一致性校验。
+
+## 2026-05-27 dev/frontend 合并
+
+### 已完成
+- 将远端 `feature/frontend` 合入当前 `dev`，保留 `dev` 现有后端、AI 服务、移动端、数据库和测试实现。
+- 管理后台前端切换为 `feature/frontend` 的 Vite + React + Ant Design + React Router 结构，新增 `/` 入口页、`/login` 登录页和 `/admin/*` 工作台路由。
+- 登录页从开发占位 token 改为调用 `POST /api/auth/login`，仅允许 `role=admin` 的账号进入后台；退出登录调用 `POST /api/auth/logout` 后清理本地登录态。
+- 新增前端 Axios client，自动携带 `Authorization: Bearer <access_token>`，并在 `401/403` 时清 token 跳回 `/login`。
+- 清理旧版 TypeScript 管理后台入口，避免 `src/main.tsx`、旧 `X-Admin-Token` API client 与新 JSX 工作台并存。
+- 同步 `frontend/admin_web/README.md`、`frontend/admin_web/AUTHENTICATION.md`、`docs/DECISIONS.md` 和本进度文档。
+
+### 已验证
+- `npm install` 通过，前端依赖已按合并后的 `package.json` / `package-lock.json` 同步。
+- `npm exec eslint .` 通过。
+- `npm run build` 通过，Vite 仍提示单个 JS chunk 超过 500k，为当前 Ant Design 单包构建的既有体积提示。
+- `python -m compileall backend ai_service` 通过。
+- `python -m pytest tests/test_auth_permissions.py tests/test_interactions.py tests/test_analysis.py tests/test_player_api.py tests/test_uploads.py` 通过，共 20 个测试。
+
+### 遗留问题
+- `/admin/*` 当前仍是导航和占位页面，后续还需要按 `docs/API_CONTRACT.md` 接入短剧、剧集、AI 分析、高光审核和看板接口。
