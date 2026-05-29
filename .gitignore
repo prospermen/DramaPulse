@@ -39,6 +39,16 @@ temp/
 .cache/
 .dev/
 .serena/
+.venv*/
+
+# ===================
+# 本地数据库
+# ===================
+*.db
+*.sqlite
+*.sqlite3
+*.db-wal
+*.db-shm
 
 # ===================
 # 构建产物
@@ -47,3 +57,22 @@ dist/
 build/
 release/
 
+# ===================
+# 依赖与语言缓存
+# ===================
+node_modules/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.dart_tool/
+*.tsbuildinfo
+
+# ===================
+# 本机工具链配置
+# ===================
+local.properties
+.gradle/
+*.jks
+*.keystore
+artifacts/delivery/.demo-pids.json
